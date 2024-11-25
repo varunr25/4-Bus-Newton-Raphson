@@ -7,6 +7,10 @@ function PixVec = Pifn(Ybus, V, phi, N)
     %   N    - Total number of buses
     % Output:
     %   PixVec - (N-1) x 1 vector of active power injections (P2x, P3x, ...)
+    
+    % Extract G and B matrices
+    G = real(Ybus);
+    B = imag(Ybus);
 
     % Initialize Pi vector
     PixVec = zeros(1, N-1);
@@ -15,7 +19,7 @@ function PixVec = Pifn(Ybus, V, phi, N)
     for i = 2:N
         for j = 1:N
             PixVec(i-1) = PixVec(i-1) + ...
-                V(i) * V(j) * abs(Ybus(i,j)) * cos(phi(i) - phi(j) - angle(Ybus(i,j)));
+                V(i) * V(j) * (G(i, j) * cos(phi(i) - phi(j)) + B(i, j) * sin(phi(i) - phi(j)));
         end
     end
 end

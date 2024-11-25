@@ -8,6 +8,10 @@ function QixVec = Qifn(Ybus, V, phi, N)
     % Output:
     %   QixVec - (N-1) x 1 vector of reactive power injections (Q2x, Q3x, ...)
 
+    % Extract G and B matrices
+    G = real(Ybus);
+    B = imag(Ybus);
+    
     % Initialize Qi vector
     QixVec = zeros(1, N-1);
     
@@ -15,7 +19,7 @@ function QixVec = Qifn(Ybus, V, phi, N)
     for i = 2:N
         for j = 1:N
             QixVec(i-1) = QixVec(i-1) + ...
-                V(i) * V(j) * abs(Ybus(i,j)) * sin(phi(i) - phi(j) - angle(Ybus(i,j)));
+                V(i) * V(j) * (G(i, j) * sin(phi(i) - phi(j)) - B(i, j) * cos(phi(i) - phi(j)));
         end
     end
 end
