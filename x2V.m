@@ -18,5 +18,5 @@ function V = x2V(x, Vg, Ng, N)
     V(1:Ng) = Vg;
     
     % Extract remaining voltage magnitudes from x
-    V(Ng+1:N) = x(N+1:end); % Correct index for voltage magnitudes
+    V(Ng+1:N) = x(N+Ng-1:end); % Correct index for voltage magnitudes
 end
