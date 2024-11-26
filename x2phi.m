@@ -11,7 +11,7 @@ function phi = x2phi(x, Ng, N)
     % phi  - N x 1 vector of voltage phase angles for all buses
 
     % Initialize phase angles vector
-    phi = zeros(N, 1);
+    phi = zeros(1, N);
     
     % Fill in the unknown phase angles for the remaining buses
     phi(2:Ng) = x(1:Ng-1); % For generator buses

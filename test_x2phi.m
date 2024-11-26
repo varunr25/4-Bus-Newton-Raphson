@@ -8,9 +8,7 @@ N = 4;                          % Total number of buses
 phi_expected = [0 0 0 0];    % Expected phase angles
 
 %% Code
-phi = zeros(1, N);
-phi(2:Ng) = x(1:Ng-1); % For generator buses
-phi(Ng+1:end) = x(Ng:(N-1)); % For load buses
+phi = x2phi(x, Ng, N);
 
 %% Comparison
 if isequal(phi, phi_expected)
