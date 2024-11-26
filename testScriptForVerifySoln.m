@@ -7,8 +7,8 @@
 % that you keep 4 decimal places to avoid misreporting. 
 
 % set alpha and beta values based on your initials
-alpha = 3; 
-beta = 4;
+alpha = 22; % V is 22 
+beta = 18;  % R is 18
 
 % provide your solutions to the questions in the project
 % solution to some questions should be provided using two values
