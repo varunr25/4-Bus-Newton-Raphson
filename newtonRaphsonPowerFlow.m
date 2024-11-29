@@ -1,58 +1,39 @@
-function [V, phi, iterations] = newtonRaphsonPowerFlow(Ybus, Pknown, Qknown, V_init, phi_init, Vg, Ng, tol, max_iter)
-    % NEWTON_RAPHSON - Power flow solution using Newton-Raphson method.
-
-    % Ensure inputs are column vectors
-    V_init = V_init(:);
-    phi_init = phi_init(:);
-    Vg = Vg(:);
-
-    % Initialize variables
-    N = length(Ybus); % Total number of buses
+function [x, iter] = newtonRaphsonPowerFlow(Ybus, Pknown, Qknown, Vg, Ng, N, tol, maxIter)
+    x = [zeros(N-1, 1); ones(N-Ng, 1)]; % Initial guess [phi2...phiN, V(Ng+1)...VN]
+    iter = 0; % Iteration counter
+    converged = false;
     
-    % Validate dimensions for Ng (number of generator buses)
-    if Ng >= N
-        error('Ng (number of generator buses) must be less than total number of buses (N).');
-    end
-
-    % Initial guess for unknowns
-    % phi_init(2:end): Exclude slack bus angle
-    % V_init(Ng+1:end): Exclude voltages for slack and generator buses
-    x = [phi_init(2:end); V_init(Ng+1:end)];
-    epsilon = tol; % Error tolerance for convergence
-    
-    fprintf('Starting Newton-Raphson Iterations...\n');
-    
-    % Iterative process
-    for iterations = 1:max_iter
-        % Step 1: Convert x to full voltage magnitudes and angles
-        V = x2V(x, Vg, Ng, N); % Ensure dimensions are correct in x2V
+    while (~converged && iter < maxIter)
+        iter = iter + 1;
+        
+        % Step 1: Compute V and phi
+        V = x2V(x, Vg, Ng, N);
         phi = x2phi(x, Ng, N);
         
-        % Step 2: Compute active and reactive power injections
-        PixVec = Pifn(Ybus, V, phi, N); % Active power injections
-        QixVec = Qifn(Ybus, V, phi, N); % Reactive power injections
+        % Step 2: Compute P_i(x) and Q_i(x)
+        PixVec = Pifn(Ybus, V, phi, N);
+        QixVec = Qifn(Ybus, V, phi, N);
         
-        % Step 3: Calculate mismatch vector
+        % Step 3: Compute mismatch vector f(x)
         f = pqmismatch(x, Pknown, Qknown, PixVec, QixVec);
+        disp('f');
+        disp(f');
         
-        % Step 4: Check for convergence
-        mismatch_norm = norm(f, 2); % Euclidean norm of mismatch vector
-        fprintf('Iteration %d: Mismatch Norm = %.8f\n', iterations, mismatch_norm);
-        if mismatch_norm < epsilon
-            fprintf('Convergence achieved in %d iterations.\n', iterations);
-            return;
-        end
-        
-        % Step 5: Compute Jacobian matrix
+        % Step 4: Compute Jacobian matrix J(x)
         J = pfJacobian(Ybus, V, phi, PixVec, QixVec);
+        disp('J');
+        disp(J);
         
-        % Step 6: Solve for update step
-        delta_x = -J \ f; % Solving J * delta_x = -f(x)
+        % Step 5: Update x
+        x = x - J \ f;
         
-        % Step 7: Update variables
-        x = x + delta_x;
+        % Check convergence
+        if norm(f, inf) < tol
+            converged = true;
+        end
     end
     
-    % If convergence is not achieved within max_iter
-    fprintf('Maximum iterations reached (%d). Solution may not have converged.\n', max_iter);
+    if ~converged
+        error('Newton-Raphson did not converge within the maximum number of iterations.');
+    end
 end
