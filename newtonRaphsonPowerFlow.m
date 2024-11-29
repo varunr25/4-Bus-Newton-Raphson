@@ -1,11 +1,7 @@
 function [x, iter] = newtonRaphsonPowerFlow(Ybus, Pknown, Qknown, Vg, Ng, N, tol, maxIter)
     x = [zeros(N-1, 1); ones(N-Ng, 1)]; % Initial guess [phi2...phiN, V(Ng+1)...VN]
-    iter = 0; % Iteration counter
-    converged = false;
     
-    while (~converged && iter < maxIter)
-        iter = iter + 1;
-        
+    for iter = 1:maxIter      
         % Step 1: Compute V and phi
         V = x2V(x, Vg, Ng, N);
         phi = x2phi(x, Ng, N);
@@ -26,14 +22,5 @@ function [x, iter] = newtonRaphsonPowerFlow(Ybus, Pknown, Qknown, Vg, Ng, N, tol
         
         % Step 5: Update x
         x = x - J \ f;
-        
-        % Check convergence
-        if norm(f, inf) < tol
-            converged = true;
-        end
-    end
-    
-    if ~converged
-        error('Newton-Raphson did not converge within the maximum number of iterations.');
     end
 end
