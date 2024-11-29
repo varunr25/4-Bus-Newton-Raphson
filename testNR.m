@@ -8,8 +8,11 @@ Ybus = [9-63i -3+19i -5+25i -1+19i;
 V = [1 1.02 1.0 1.0];
 phi = [0 0 0 0];
 
-Pknown = [0.1632 0 -0.1];
-Qknown = [0.8976 0 -0.5];
+% Pknown = [0.1632 0 -0.1];
+% Qknown = [0.8976 0 -0.5];
+
+Pknown = [2.2 -1.7 -2];
+Qknown = [-0.5 -1.05 -1.25];
 
 Vk = [1 1.02];
 Vg = Vk; 
@@ -28,7 +31,7 @@ expected_x = [0.0239 -0.0502 -0.0331 0.9524 0.9690];
 
 % Convergence criteria
 tol = 1e-6; % Tolerance for convergence
-maxIter = 20; % Maximum number of iterations
+maxIter = 2; % Maximum number of iterations
 
 %% Run the Newton-Raphson function
 try
